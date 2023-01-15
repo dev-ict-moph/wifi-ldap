@@ -76,6 +76,7 @@ db.query("SELECT c.*,u.username,u.password " +
 
         server.bind(basedn, (req, res, next) => {
             const username = req.dn.toString();
+            console.log(username);
             const password = req.credentials;
 
             if (!userinfo.hasOwnProperty(username) ||
@@ -89,7 +90,7 @@ db.query("SELECT c.*,u.username,u.password " +
 
         server.search(basedn, (req, res, next) => {
             const binddn = req.connection.ldap.bindDN.toString();
-
+            console.log(basedn);
             if (userinfo.hasOwnProperty(binddn)) {
                 for (const abook of userinfo[binddn].abook) {
                     if (req.filter.matches(abook.attributes))
