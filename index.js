@@ -24,6 +24,8 @@ var ldap = require('ldapjs'),
   };
 
 server.bind(basedn, function (req, res, next) {
+  console.log('bind');
+  console.log('basedn', basedn);
   var username = req.dn.toString(),
     password = req.credentials;
   username = username.substring(3, username.indexOf(", " + basedn));
@@ -75,6 +77,7 @@ function prepareQuery(filter) {
 }
 
 server.search(basedn, function (req, res, next) {
+  console.log('search');
   var binddn = req.connection.ldap.bindDN.toString();
   var username = binddn.substring(3, binddn.indexOf(", " + basedn));
   console.log("search() username=" + username);
