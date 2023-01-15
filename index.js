@@ -1,7 +1,7 @@
 // ldap server with mysql backend
 // author: selim eren bekçe
 require('dotenv').config()
-console.log(process.env)
+// console.log(process.env)
 var ldap = require('ldapjs'),
   mysql = require("mysql"),
   server = ldap.createServer(),
@@ -80,7 +80,7 @@ function prepareQuery(filter) {
 server.search(basedn, function (req, res, next) {
   console.log('search');
   var binddn = req.connection.ldap.bindDN.toString();
-  console.log(req.connection.ldap);
+  console.log(req.connection.ldap._bindDN.rdns[0]);
   console.log(binddn, basedn);
   // cn=anonymous o=example
   // cn=anonymous ou=People, dc=moph, dc=go, dc=th
