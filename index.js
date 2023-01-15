@@ -86,6 +86,7 @@ server.search(basedn, function (req, res, next) {
   var username = binddn.substring(3, binddn.indexOf(", " + basedn));
   console.log(binddn.indexOf(", " + basedn));
   console.log("search() username: " + username);
+  console.log('req.filter' + req.filter);
   var query = prepareQuery(req.filter).trim();
   if (query != '') {
     query = " where " + query;
