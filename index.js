@@ -80,13 +80,13 @@ function prepareQuery(filter) {
 server.search(basedn, function (req, res, next) {
   console.log('search');
   var binddn = req.connection.ldap.bindDN.toString();
+  console.log(req.connection.ldap);
   console.log(binddn, basedn);
   // cn=anonymous o=example
-  // cn=anonymous cn=users,dc=ods,dc=example,dc=com
+  // cn=anonymous ou=People, dc=moph, dc=go, dc=th
   var username = binddn.substring(3, binddn.indexOf(", " + basedn));
   console.log(binddn.indexOf(", " + basedn));
   console.log("search() username: " + username);
-  console.log('req.filter' + req.filter);
   var query = prepareQuery(req.filter).trim();
   if (query != '') {
     query = " where " + query;
