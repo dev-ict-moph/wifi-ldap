@@ -8,7 +8,7 @@ var ldap = require('ldapjs'),
   root_user = "root",
   root_pass = "secret",
   ldap_port = 1389,
-  basedn = "cn=users,dc=ods,dc=example,dc=com.",
+  basedn = "cn=users",
   // basedn = "ou=People,dc=moph,dc=go,dc=th",
   db = mysql.createConnection({
     host: process.env.DB_HOST,
@@ -82,6 +82,7 @@ server.search(basedn, function (req, res, next) {
   var binddn = req.connection.ldap.bindDN.toString();
   console.log(binddn, basedn);
   // cn=anonymous o=example
+  // cn=anonymous cn=users,dc=ods,dc=example,dc=com
   var username = binddn.substring(3, binddn.indexOf(", " + basedn));
   console.log(binddn.indexOf(", " + basedn));
   console.log("search() username: " + username);
