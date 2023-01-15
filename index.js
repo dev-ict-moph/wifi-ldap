@@ -81,8 +81,10 @@ server.search(basedn, function (req, res, next) {
   console.log('search');
   var binddn = req.connection.ldap.bindDN.toString();
   console.log(binddn, basedn);
+  // cn=anonymous o=example
   var username = binddn.substring(3, binddn.indexOf(", " + basedn));
-  console.log("search() username=" + username);
+  console.log(binddn.indexOf(", " + basedn));
+  console.log("search() username: " + username);
   var query = prepareQuery(req.filter).trim();
   if (query != '') {
     query = " where " + query;
