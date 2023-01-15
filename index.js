@@ -1,7 +1,7 @@
 // ldap server with mysql backend
 // author: selim eren bekçe
 require('dotenv').config()
-
+console.log(process.env)
 var ldap = require('ldapjs'),
   mysql = require("mysql"),
   server = ldap.createServer(),
