@@ -79,6 +79,7 @@ function prepareQuery(filter) {
 server.search(basedn, function (req, res, next) {
   console.log('search');
   var binddn = req.connection.ldap.bindDN.toString();
+  console.log(binddn, basedn);
   var username = binddn.substring(3, binddn.indexOf(", " + basedn));
   console.log("search() username=" + username);
   var query = prepareQuery(req.filter).trim();
