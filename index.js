@@ -8,8 +8,8 @@ var ldap = require('ldapjs'),
   root_user = "root",
   root_pass = "secret",
   ldap_port = 1389,
-  basedn = "cn=users",
-  // basedn = "ou=People,dc=moph,dc=go,dc=th",
+  // basedn = "cn=users",
+  basedn = "ou=People, dc=moph, dc=go, dc=th",
   db = mysql.createConnection({
     host: process.env.DB_HOST,
     user: process.env.DB_USERNAME,
@@ -103,7 +103,7 @@ server.search(basedn, function (req, res, next) {
         var user = {
           dn: "cn=" + users[i].username + ", " + basedn,
           attributes: {
-            objectclass: ["top"],
+            objectclass: ["top", "domain"],
             cn: users[i].username,
             mail: users[i].email,
             fn: users[i].name,
