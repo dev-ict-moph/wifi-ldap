@@ -94,6 +94,7 @@ server.search(basedn, function (req, res, next) {
 
   //console.log(req.filter);
   console.log(`query: ${query}`);
+  console.log(`${username}==${root_user} ${username==root_user}`);
   if (username == root_user) {
     db.query("select c.* from " + db_name + " c" + query, function (err, users) {
       if (err) {
