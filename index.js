@@ -8,7 +8,7 @@ var ldap = require('ldapjs'),
   root_user = "root",
   root_pass = "secret",
   ldap_port = 1389,
-  basedn = "o=example",
+  basedn = "ou=People,dc=moph,dc=go,dc=th",
   db = mysql.createConnection({
     host: process.env.DB_HOST,
     user: process.env.DB_USERNAME,
