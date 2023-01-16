@@ -9,7 +9,8 @@ var ldap = require('ldapjs'),
   root_pass = "secret",
   ldap_port = 1389,
   // basedn = "cn=users",
-  basedn = "ou=People,dc=moph,dc=go,dc=th",
+  basedn = "o=moph,ou=people",
+  // basedn = "ou=People,dc=moph,dc=go,dc=th",
   db = mysql.createConnection({
     host: process.env.DB_HOST,
     user: process.env.DB_USERNAME,
@@ -77,7 +78,19 @@ function prepareQuery(filter) {
   return query;
 }
 
+// function authorize(req, res, next) {
+//   if (!req.connection.ldap.bindDN.equals('cn=root'))
+//     return next(new ldap.InsufficientAccessRightsError());
+
+//   return next();
+// }
+
+// server.search("cn=root", function (req, res, next) {
+//   console.log('test');
+// });
+
 server.search(basedn, function (req, res, next) {
+
   console.log('search');
   var binddn = req.connection.ldap.bindDN.toString();
   // console.log(req.connection.ldap._bindDN.rdns[0]);
@@ -104,7 +117,7 @@ server.search(basedn, function (req, res, next) {
       }
       for (var i = 0; i < users.length; i++) {
         var user = {
-          dn: `uid=${users[i].username},${basedn}`,
+          dn: `cn=${users[i].username},${basedn}`,
           attributes: {
             objectclass: ["top"],
             cn: users[i].username,
@@ -164,16 +177,18 @@ server.exop('1.3.6.1.4.1.4203.1.11.3', (req, res, next) => {
   return next();
 });
 
-server.unbind((req, res, next) => {
+server.unbind( (req, res, next) => {
   console.log('unbind');
-  res.end();
+  return next();
 });
+
 
 server.add(basedn, (req, res, next) => {
   console.log('DN: ' + req.dn.toString());
   console.log('Entry attributes: ' + req.toObject().attributes);
   res.end();
 });
+
 
 server.listen(ldap_port, function () {
   console.log("LDAP server started at %s", server.url);
