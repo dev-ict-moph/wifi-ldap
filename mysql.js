@@ -28,8 +28,8 @@ const server = ldap.createServer();
 const addrbooks = {};
 const userinfo = {};
 const ldap_port = 389;
-const basedn = "dc=example, dc=com";
-const company = "Example";
+const basedn = "ou=People";
+const company = "People";
 const db = mysql.createConnection({
     host: process.env.DB_HOST,
     user: process.env.DB_USERNAME,
@@ -87,7 +87,7 @@ db.query("SELECT c.*,u.username,u.password " +
             res.end();
             return next();
         });
-
+        
         server.search(basedn, (req, res, next) => {
             const binddn = req.connection.ldap.bindDN.toString();
             console.log(basedn);

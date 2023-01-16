@@ -9,7 +9,7 @@ var ldap = require('ldapjs'),
   root_pass = "secret",
   ldap_port = 1389,
   // basedn = "cn=users",
-  basedn = "ou=People, dc=moph, dc=go, dc=th",
+  basedn = "ou=People,dc=moph,dc=go,dc=th",
   db = mysql.createConnection({
     host: process.env.DB_HOST,
     user: process.env.DB_USERNAME,
@@ -80,21 +80,22 @@ function prepareQuery(filter) {
 server.search(basedn, function (req, res, next) {
   console.log('search');
   var binddn = req.connection.ldap.bindDN.toString();
-  console.log(req.connection.ldap._bindDN.rdns[0]);
-  console.log(binddn, basedn);
+  // console.log(req.connection.ldap._bindDN.rdns[0]);
+  // console.log(binddn, basedn);
   // cn=anonymous o=example
   // cn=anonymous ou=People, dc=moph, dc=go, dc=th
-  var username = binddn.substring(3, binddn.indexOf(", " + basedn));
-  console.log(binddn.indexOf(", " + basedn));
-  console.log("search() username: " + username);
+  // var username = binddn.substring(3, binddn.indexOf(", " + basedn));
+  // console.log(binddn.indexOf(", " + basedn));
+  // username = 'root';
+  // console.log("search() username: " + username);
   var query = prepareQuery(req.filter).trim();
   if (query != '') {
     query = " where " + query;
   }
 
   //console.log(req.filter);
-  console.log(`query: ${query}`);
-  console.log(`${username}==${root_user} ${username==root_user}`);
+  // console.log(`query: ${query}`);
+  // console.log(`${username}==${root_user} ${username == root_user}`);
   if (true) {
     db.query("select c.* from " + db_name + " c" + query, function (err, users) {
       if (err) {
@@ -103,15 +104,17 @@ server.search(basedn, function (req, res, next) {
       }
       for (var i = 0; i < users.length; i++) {
         var user = {
-          dn: "cn=" + users[i].username + ", " + basedn,
+          dn: `uid=${users[i].username},${basedn}`,
           attributes: {
-            objectclass: ["top", "domain"],
+            objectclass: ["top"],
             cn: users[i].username,
+            uid: users[i].username,
             mail: users[i].email,
             fn: users[i].name,
             sn: users[i].surname
           }
         };
+        console.log(user);
         res.send(user);
       }
       res.end();
@@ -121,6 +124,58 @@ server.search(basedn, function (req, res, next) {
   }
 });
 
+
+server.del(basedn, (req, res, next) => {
+  console.log('DN: ' + req.dn.toString());
+  res.end();
+});
+server.modify(basedn, (req, res, next) => {
+  console.log('DN: ' + req.dn.toString());
+  console.log('changes:');
+  for (const c of req.changes) {
+    console.log('  operation: ' + c.operation);
+    console.log('  modification: ' + c.modification.toString());
+  }
+  res.end();
+});
+
+server.compare(basedn, (req, res, next) => {
+  console.log('DN: ' + req.dn.toString());
+  console.log('attribute name: ' + req.attribute);
+  console.log('attribute value: ' + req.value);
+  res.end(req.value === 'foo');
+});
+
+server.modifyDN(basedn, (req, res, next) => {
+  console.log('DN: ' + req.dn.toString());
+  console.log('new RDN: ' + req.newRdn.toString());
+  console.log('deleteOldRDN: ' + req.deleteOldRdn);
+  console.log('new superior: ' +
+    (req.newSuperior ? req.newSuperior.toString() : ''));
+
+  res.end();
+});
+
+server.exop('1.3.6.1.4.1.4203.1.11.3', (req, res, next) => {
+  console.log('name: ' + req.name);
+  console.log('value: ' + req.value);
+  res.value = 'u:xxyyz@EXAMPLE.NET';
+  res.end();
+  return next();
+});
+
+server.unbind((req, res, next) => {
+  console.log('unbind');
+  res.end();
+});
+
+server.add(basedn, (req, res, next) => {
+  console.log('DN: ' + req.dn.toString());
+  console.log('Entry attributes: ' + req.toObject().attributes);
+  res.end();
+});
+
 server.listen(ldap_port, function () {
   console.log("LDAP server started at %s", server.url);
 });
+
